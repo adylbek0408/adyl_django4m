@@ -33,6 +33,13 @@
             <h5>{{ product.created_date }}</h5>
             <h5>{{ product.modified_date }}</h5>
         </div>
+         <div class="create_comment">
+        <form action="/products/{{ product.id }}/" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Add Review">
+        </form>
+        </div>
         <div class="reviews">
             {% for review in comments %}
                 <div class="review">
