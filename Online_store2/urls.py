@@ -29,7 +29,7 @@ urlpatterns = [
     path('products/<int:id>/', products_detail_view),
     path("categories/", category_view),
     path('products/create/', create_product_view),
-    path ('', include(users.urls.urlpatterns))
+    path('users/', include('users.urls'))
 
     ]
 
