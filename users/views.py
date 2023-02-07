@@ -1,17 +1,23 @@
-
 from django.shortcuts import render, redirect
 from users.forms import LoginForm, RegisterForm
-from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.views.generic import ListView, CreateView, RedirectView
 
 
-def auth_view(request):
-    if request.method == 'GET':
-        return render(request, 'users/login.html', context={'form': LoginForm})
+# Create your views here.
 
-    elif request.method == 'POST':
+class LoginView(ListView, CreateView):
+    template_name = 'users/login.html'
+
+    def get(self, request, **kwargs):
+        context = {
+            'form': LoginForm(),
+        }
+        return render(request, self.template_name, context=context)
+
+    def post(self, request, **kwargs):
         form = LoginForm(data=request.POST)
-        """ authenticate user """
 
         if form.is_valid():
             user = authenticate(
@@ -22,26 +28,29 @@ def auth_view(request):
                 login(request, user)
                 return redirect('/products/')
             else:
-                form.add_error('username', 'chuvak dagy bir jolu poprobuy')
+                form.add_error('username', 'чувак попробуй дагы бир жолу')
 
         return render(request, 'users/login.html', context={
-            'form': form
+            'form': form,
         })
 
 
-def logout_view(request):
-    logout(request)
-    return redirect('/products/')
+class LogoutView(RedirectView):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect('/products/')
 
 
-def register_view(request):
-    if request.method == 'GET':
+class RegisterView(ListView, CreateView):
+    template_name = 'users/register.html'
+
+    def get(self, request, **kwargs):
         context = {
-            'form': RegisterForm
+            'form': RegisterForm,
         }
         return render(request, 'users/register.html', context=context)
 
-    if request.method == 'POST':
+    def post(self, request, *args, **kwargs):
         form = RegisterForm(data=request.POST)
 
         if form.is_valid():
@@ -53,8 +62,8 @@ def register_view(request):
                 )
                 return redirect('/users/login/')
             else:
-                form.add_error('password1', 'ошибка!')
+                form.add_error('password1', 'ошибка')
 
         return render(request, 'users/register.html', context={
-            'form': form
+            'form': form,
         })
